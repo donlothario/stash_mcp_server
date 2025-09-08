@@ -9,7 +9,7 @@
                 "--rm",
                 "--env-file",
                 "${workspaceFolder}/.env",
-                "stash_mcp_server"
+                "ghcr.io/donlothario/stash_mcp_server:latest"
             ]
         }
     }
