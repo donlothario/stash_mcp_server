@@ -195,8 +195,8 @@ def _cached_get_all_scenes(
     organized_only: bool = True,
     exclude_tags: Optional[str] = None,
     include_tags: Optional[str] = None,
-    min_rating: Optional[int] = 0,
-    max_rating: Optional[int] = 100
+    min_rating: Optional[int] = None,
+    max_rating: Optional[int] = None
 ) -> List[Dict]:
     """Internal cached implementation for getting all scenes with filters.
 
