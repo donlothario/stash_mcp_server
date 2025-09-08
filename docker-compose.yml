@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  stash_mcp_server:
+    image: stash_mcp_server:latest
+    container_name: stash_mcp_server
+    build: .
+    ports:
+      - "9001:9001"
+    environment:
+      STASH_IP: ${STASH_IP}
+      STASH_PORT: ${STASH_PORT}
+      STASH_API_KEY: ${STASH_API_KEY}
+    restart: unless-stopped

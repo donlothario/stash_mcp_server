@@ -1,0 +1,16 @@
+{
+    "servers": {
+        "stash_mcp_server": {
+            "type": "stdio",
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "--env-file",
+                "${workspaceFolder}/.env",
+                "stash_mcp_server"
+            ]
+        }
+    }
+}
