@@ -1,8 +1,15 @@
 [project]
-name = "stash-mcp"
+name = "stash_mcp_server"
 version = "0.1.0"
-description = "Servidor MCP para Stash"
+description = "An MCP server for Stash"
 requires-python = ">=3.10"
+dependencies = [
+    "stashapi>=0.1.0",
+    "fastmcp>=2.11.3",
+]
+
+[project.scripts]
+stash_mcp_server = "stash_mcp_server.__main__:main"
 
 [tool.mypy]
 python_version = "3.12"
@@ -18,9 +25,10 @@ disallow_untyped_defs = true
 no_implicit_optional = true
 show_error_codes = true
 
-# Ignorar módulos sin stubs
 [[tool.mypy.overrides]]
 module = [
-  "stashapi.*"
+  "stashapi.*",
+  "fastmcp.*"
 ]
 ignore_missing_imports = true
+

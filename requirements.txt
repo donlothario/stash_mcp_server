@@ -1,2 +1,2 @@
-stashapi
-fastmcp
+stashapi==0.1.0
+fastmcp==2.11.3

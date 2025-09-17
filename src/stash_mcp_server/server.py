@@ -8,12 +8,23 @@ from typing import Dict, List, Optional, Any
 
 from stashapi.stashapp import StashInterface
 from fastmcp import FastMCP, Context
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from urllib.parse import urlparse
 
 
-# Load environment variables
-load_dotenv()
+# Load environment variables: prefer a .env in the current working directory
+# (so running the installed package from the project root works). If not
+# found, fallback to the .env bundled next to the package file.
+dot_env_path = find_dotenv(usecwd=True)
+if dot_env_path:
+    load_dotenv(dot_env_path)
+else:
+    # fallback: .env next to this file's parent directory
+    env_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        '.env'
+    )
+    load_dotenv(env_path)
 
 #############################################
 # Configuration
@@ -1333,7 +1344,3 @@ def main() -> None:
     connect_to_stash()
     # mcp.run(transport="http", host="0.0.0.0", port=9001)
     mcp.run(transport="stdio")
-
-
-if __name__ == "__main__":
-    main()

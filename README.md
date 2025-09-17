@@ -63,21 +63,90 @@ For `BETWEEN` and `NOT_BETWEEN` filters:
 | `LOG_LEVEL`                   | `INFO`                  | Log level: DEBUG, INFO, WARNING, ERROR                          |
 
 
-## Running
-### Local (stdio, default)
+## Usage
+
+### Install as local package
+Install the package in editable mode:
+
 ```bash
-python server.py
+python -m pip install -e .
 ```
 
-### HTTP (optional, uncomment in `main`)
-```python
-# mcp.run(transport="http", host="0.0.0.0", port=9001)
+#### Configuration example for Claude Desktop/Cursor/VSCode
+Add this configuration to your application's settings (mcp.json):
+```json
+"stash mcp server": {
+    "type": "stdio",
+    "command": "python",
+    "args": [
+        "-m",
+        "stash_mcp_server"
+    ],
+    "env": {
+        "STASH_ENDPOINT": "http://localhost:9999",
+        "STASH_API_KEY": "YOUR_API_KEY",
+    }
+}
 ```
 
-### Docker (example)
+### Docker
+
+#### Build the image
+Build the image:
+
 ```bash
 docker build -t stash_mcp_server:latest .
-docker run --rm -e STASH_ENDPOINT=http://host.docker.internal:6969 -e STASH_API_KEY=XXX stash_mcp_server:latest
+```
+#### Configuration example for Claude Desktop/Cursor/VSCode
+Create a `.env` file in your workspace folder with the following content:
+```
+STASH_ENDPOINT=http://localhost:9999
+STASH_API_KEY=YOUR_API_KEY
+```
+
+Add this configuration to your application's settings (mcp.json):
+```json
+"stash mcp server": {
+    "type": "stdio",
+    "command": "docker",
+    "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--env-file",
+        "${workspaceFolder}/.env",
+        "stash_mcp_server"
+    ]
+}
+```
+
+#### Pull the image
+Pull the latest image from the Docker registry:
+
+```bash
+docker pull ghcr.io/donlothario/stash_mcp_server:latest
+```
+#### Configuration example for Claude Desktop/Cursor/VSCode
+Create a `.env` file in your workspace folder with the following content:
+```
+STASH_ENDPOINT=http://localhost:9999
+STASH_API_KEY=YOUR_API_KEY
+```
+
+Add this configuration to your application's settings (mcp.json):
+```json
+"stash mcp server": {
+    "type": "stdio",
+    "command": "docker",
+    "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--env-file",
+        "${workspaceFolder}/.env",
+        "ghcr.io/donlothario/stash_mcp_server"
+    ]
+}
 ```
 
 ## Technical Notes
