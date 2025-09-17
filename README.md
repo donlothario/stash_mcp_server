@@ -1,6 +1,6 @@
 # Stash MCP Server
 
-MCP (Model Context Protocol) server that exposes advanced tools for querying a Stash instance with complex filtering capabilities, optimized caching, intelligent analysis, and personalized recommendations.
+An MCP (Model Context Protocol) server that provides a concise set of tools to query and analyze an [Stash](https://github.com/stashapp/stash) instance with composable, high‑precision filters, optimized caching for faster queries, automated intelligence for performer/scene analysis, and personalized recommendations based on usage and preferences.
 
 ### Prompts
 | Prompt                | Description                               | Parameters            |
