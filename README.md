@@ -56,13 +56,13 @@ For `BETWEEN` and `NOT_BETWEEN` filters:
 ## Configuration
 
 The server supports flexible configuration through environment variables:
-| Variable                      | Default                 | Description                                                     |
-| ----------------------------- | ----------------------- | --------------------------------------------------------------- |
-| `STASH_ENDPOINT`              | `http://localhost:6969` | Stash server endpoint (scheme, host y puerto juntos)            |
-| `STASH_API_KEY`               | —                       | Required API key (mandatory, if missing the server won't start) |
-| `STASH_CONNECT_RETRIES`       | `3`                     | Initial connection retries                                      |
-| `STASH_CONNECT_DELAY_SECONDS` | `1.5`                   | Delay between retries (seconds)                                 |
-| `LOG_LEVEL`                   | `INFO`                  | Log level: DEBUG, INFO, WARNING, ERROR                          |
+| Variable                      | Default                 | Description                            |
+| ----------------------------- | ----------------------- | -------------------------------------- |
+| `STASH_ENDPOINT`              | `http://localhost:6969` | Stash server endpoint                  |
+| `STASH_API_KEY`               | —                       | Required API key (mandatory)           |
+| `STASH_CONNECT_RETRIES`       | `3`                     | Initial connection retries             |
+| `STASH_CONNECT_DELAY_SECONDS` | `1.5`                   | Delay between retries (seconds)        |
+| `LOG_LEVEL`                   | `INFO`                  | Log level: DEBUG, INFO, WARNING, ERROR |
 
 ### Environment Setup
 1. Copy the example environment file:
