@@ -4,7 +4,7 @@ This module provides reusable fixtures for testing the Stash MCP server,
 including mock Stash interfaces, sample data, and server configurations.
 """
 
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import Any, Dict, List, TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest

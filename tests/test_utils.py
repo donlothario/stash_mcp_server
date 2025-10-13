@@ -5,7 +5,7 @@ rating calculations, and common operations.
 """
 
 from typing import Any, Dict, List
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from stash_mcp_server.utils import (
     add_filter,

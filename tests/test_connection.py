@@ -10,11 +10,7 @@ from unittest.mock import Mock, patch
 import pytest
 from stashapi.stashapp import StashInterface
 
-from stash_mcp_server.connection import (
-    StashConnection,
-    connect_to_stash,
-    get_stash_interface,
-)
+from stash_mcp_server.connection import connect_to_stash, get_stash_interface, StashConnection
 
 
 class TestStashConnection:

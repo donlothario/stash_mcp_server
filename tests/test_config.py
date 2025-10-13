@@ -87,6 +87,7 @@ class TestEnvironmentVariables:
         ):
             # Re-import to get new value
             import importlib
+
             import stash_mcp_server.config as config_module
             importlib.reload(config_module)
 
