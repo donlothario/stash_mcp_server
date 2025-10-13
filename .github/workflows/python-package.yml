@@ -27,10 +27,19 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
       - name: Check import order with isort
+        env:
+          STASH_API_KEY: "test_key_for_ci"
+          TESTING: "true"
         run: uv run isort --check-only --diff src/ tests/
       - name: Check format with autopep8
+        env:
+          STASH_API_KEY: "test_key_for_ci"
+          TESTING: "true"
         run: uv run autopep8 --diff --exit-code --recursive src/ tests/
       - name: Lint with flake8
+        env:
+          STASH_API_KEY: "test_key_for_ci"
+          TESTING: "true"
         run: uv run flake8 src/ tests/
 
   type:
@@ -49,6 +58,9 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
       - name: Type check with mypy
+        env:
+          STASH_API_KEY: "test_key_for_ci"
+          TESTING: "true"
         run: uv run mypy src/
 
   test:
@@ -67,7 +79,11 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
       - name: Run tests with pytest
-        run: uv run pytest tests/ -v --cov=bookclub_bot --cov-report=xml --cov-report=term
+        env:
+          STASH_API_KEY: "test_key_for_ci"
+          STASH_ENDPOINT: "http://localhost:9999"
+          TESTING: "true"
+        run: uv run pytest tests/ -v --cov=stash_mcp_server --cov-report=xml --cov-report=term
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5.3.1
         with:
@@ -93,4 +109,7 @@ jobs:
           enable-cache: true
           ignore-nothing-to-cache: true
       - name: Test with python ${{ matrix.python-version }}
+        env:
+          STASH_API_KEY: "test_key_for_ci"
+          TESTING: "true"
         run: uv run --frozen tox -e py
