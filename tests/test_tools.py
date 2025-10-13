@@ -80,7 +80,7 @@ class TestGetPerformerInfo:
         """
         # Clear the cache first
         _cached_get_performer_info.cache_clear()
-        
+
         mock_stash_interface.find_performer.side_effect = Exception(
             "Database error"
         )
@@ -262,7 +262,7 @@ class TestGetAllScenes:
         # Clear cache to ensure we get fresh results
         from stash_mcp_server.tools import _cached_get_all_scenes
         _cached_get_all_scenes.cache_clear()
-        
+
         mock_stash_interface.find_scenes.side_effect = Exception(
             "Database error"
         )

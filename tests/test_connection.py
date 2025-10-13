@@ -198,10 +198,10 @@ class TestConnectToStash:
         a connection.
         """
         mock_interface = Mock(spec=StashInterface)
-        
+
         # Reset singleton
         StashConnection._instance = None
-        
+
         with patch(
             'stash_mcp_server.connection.StashInterface',
             return_value=mock_interface
@@ -217,7 +217,7 @@ class TestConnectToStash:
         # Create a new instance for this test
         conn = StashConnection.__new__(StashConnection)
         conn._stash_interface = None
-        
+
         with patch(
             'stash_mcp_server.connection.StashConnection._instance',
             conn
@@ -245,7 +245,7 @@ class TestGetStashInterface:
         connection = StashConnection()
         original_interface = connection._stash_interface
         connection._stash_interface = mock_interface
-        
+
         try:
             result = get_stash_interface()
             # Should return some interface (either mock or actual)
