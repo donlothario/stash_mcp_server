@@ -4,11 +4,11 @@ This module centralizes all configuration settings, environment variables,
 and application constants.
 """
 
-import os
 import logging
+import os
 from typing import Final
-from dotenv import load_dotenv, find_dotenv
 
+from dotenv import find_dotenv, load_dotenv
 
 # Configure logging
 logging.basicConfig(

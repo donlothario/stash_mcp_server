@@ -1,2 +1,3 @@
-stashapi==0.1.0
 fastmcp==2.11.3
+python-dotenv>=1.1.1
+stashapi==0.1.0

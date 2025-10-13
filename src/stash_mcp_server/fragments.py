@@ -4,8 +4,7 @@ This module contains all GraphQL fragment definitions used throughout
 the application for consistent data retrieval.
 """
 
-from typing import Final, Dict
-
+from typing import Dict, Final
 
 PERFORMER_FRAGMENT: Final[str] = """
 id

@@ -4,34 +4,33 @@ This module contains all tool definitions for the Stash MCP server,
 providing cached queries and advanced analysis capabilities.
 """
 
-import time
 import logging
+import time
 from functools import lru_cache
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
-from fastmcp import FastMCP, Context
+from fastmcp import Context, FastMCP
 
 from .config import (
-    PERFORMER_CACHE_SIZE,
-    SCENES_CACHE_SIZE,
-    PERFORMERS_LIST_CACHE_SIZE,
     DEFAULT_MAX_BATCH_PERFORMERS,
+    PERFORMER_CACHE_SIZE,
+    PERFORMERS_LIST_CACHE_SIZE,
+    RATING_AVERAGE,
     RATING_EXCELLENT,
     RATING_GOOD,
-    RATING_AVERAGE,
+    SCENES_CACHE_SIZE,
 )
-from .connection import get_stash_interface, connect_to_stash
+from .connection import connect_to_stash, get_stash_interface
 from .fragments import FRAGMENTS
 from .utils import (
     add_filter,
-    build_tag_filter,
     build_rating_filter,
+    build_tag_filter,
     calculate_average_rating,
     count_scenes_by_rating,
     extract_tag_frequency,
     format_filter_description,
 )
-
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -635,8 +634,8 @@ def _register_advanced_tools(mcp: FastMCP) -> None:
                     # Filter out current performer and take first 5
                     similar_performers = [
                         p for p in all_performers
-                        if p.get("name", "").lower() !=
-                        performer_name.lower()
+                        if p.get("name", "").lower()
+                        != performer_name.lower()
                     ][:5]
 
                 except Exception as e:
@@ -754,7 +753,7 @@ def _register_advanced_tools(mcp: FastMCP) -> None:
             progress = int((i / total_performers) * 100)
             await ctx.report_progress(progress, 100)
             await ctx.info(
-                f"Processing performer {i+1}/{total_performers}: "
+                f"Processing performer {i + 1}/{total_performers}: "
                 f"{performer_name}"
             )
 

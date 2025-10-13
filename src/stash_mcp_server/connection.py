@@ -4,20 +4,19 @@ This module handles the connection to the Stash instance with retry logic
 and provides a singleton interface for accessing the Stash API.
 """
 
-import time
 import logging
+import time
 from typing import Optional
 from urllib.parse import urlparse
 
 from stashapi.stashapp import StashInterface
 
 from .config import (
-    STASH_ENDPOINT,
     STASH_API_KEY,
-    STASH_CONNECT_RETRIES,
     STASH_CONNECT_DELAY_SECONDS,
+    STASH_CONNECT_RETRIES,
+    STASH_ENDPOINT,
 )
-
 
 logger: logging.Logger = logging.getLogger(__name__)
 

@@ -1,5 +1,10 @@
 # Stash MCP Server
 
+![License](https://img.shields.io/github/license/donlothario/stash_mcp_server)
+[![Python](https://github.com/donlothario/stash_mcp_server/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/donlothario/stash_mcp_server/actions/workflows/python-package.yml)
+[![Docker image](https://github.com/donlothario/stash_mcp_server/actions/workflows/docker_image.yml/badge.svg?branch=main)](https://github.com/donlothario/stash_mcp_server/actions/workflows/docker_image.yml)
+
+
 An MCP (Model Context Protocol) server that provides a concise set of tools to query and analyze an [Stash](https://github.com/stashapp/stash) instance with composable, high‑precision filters, optimized caching for faster queries, automated intelligence for performer/scene analysis, and personalized recommendations based on usage and preferences.
 
 ### Prompts

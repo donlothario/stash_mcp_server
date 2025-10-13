@@ -6,12 +6,12 @@ with all registered tools and prompts.
 """
 
 import logging
+
 from fastmcp import FastMCP
 
 from .connection import connect_to_stash
-from .tools import register_tools
 from .prompts import register_prompts
-
+from .tools import register_tools
 
 logger: logging.Logger = logging.getLogger(__name__)
 

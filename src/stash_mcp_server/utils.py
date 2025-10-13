@@ -5,11 +5,10 @@ error handling, and common operations.
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Callable
 from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
 
 from .connection import get_stash_interface
-
 
 logger: logging.Logger = logging.getLogger(__name__)
 
