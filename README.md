@@ -1,8 +1,10 @@
 # Stash MCP Server
 
 ![License](https://img.shields.io/github/license/donlothario/stash_mcp_server)
-[![Python](https://github.com/donlothario/stash_mcp_server/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/donlothario/stash_mcp_server/actions/workflows/python-package.yml)
+[![Build](https://github.com/donlothario/stash_mcp_server/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/donlothario/stash_mcp_server/actions/workflows/python-package.yml)
 [![Docker image](https://github.com/donlothario/stash_mcp_server/actions/workflows/docker_image.yml/badge.svg?branch=main)](https://github.com/donlothario/stash_mcp_server/actions/workflows/docker_image.yml)
+![Python](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fdonlothario%2Fstash_mcp_server%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)
+![Dynamic TOML Badge](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdonlothario%2Fstash_mcp_server%2Frefs%2Fheads%2Fmain%2Fpyproject.toml&query=%24.project.dependencies%5B2%5D&label=dependency)
 
 
 An MCP (Model Context Protocol) server that provides a concise set of tools to query and analyze an [Stash](https://github.com/stashapp/stash) instance with composable, high‑precision filters, optimized caching for faster queries, automated intelligence for performer/scene analysis, and personalized recommendations based on usage and preferences.
