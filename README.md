@@ -18,13 +18,13 @@ An MCP (Model Context Protocol) server that provides a concise set of tools to q
 | **discover-performers** | Performer discovery by criteria           | `criteria: str`       |
 
 ### Resources
-| Resource                   | Description                                    | URI                                     |
-| -------------------------- | ---------------------------------------------- | --------------------------------------- |
-| **All Actresses**          | List of all favorite actresses with basic info | `stash://actresses/all`                 |
-| **Actress Information**    | Detailed information about a specific actress  | `stash://actress/{name}`                |
-| **Actresses by Country**   | List of actresses filtered by country          | `stash://actress/country/{country}`     |
-| **Actresses by Ethnicity** | List of actresses filtered by ethnicity        | `stash://actress/ethnicity/{ethnicity}` |
-| **Actress Statistics**     | Statistical summary of all actresses           | `stash://actress/stats`                 |
+| Resource                    | Description                                     | URI                                       |
+| --------------------------- | ----------------------------------------------- | ----------------------------------------- |
+| **All performers**          | List of all favorite performers with basic info | `stash://performer/all`                   |
+| **Performers Information**  | Detailed information about a specific performer | `stash://performer/{name}`                |
+| **Performers by Country**   | List of performers filtered by country          | `stash://performer/country/{country}`     |
+| **Performers by Ethnicity** | List of performers filtered by ethnicity        | `stash://performer/ethnicity/{ethnicity}` |
+| **Performers Statistics**   | Statistical summary of all performers           | `stash://performer/stats`                 |
 
 ### Tools
 | Tool                              | Description                                  | Parameters                                                                     |
@@ -69,38 +69,38 @@ For `BETWEEN` and `NOT_BETWEEN` filters:
 - `height_cm_value2: int` - Second value for height range
 - `weight_value2: int` - Second value for weight range
 
-### Resources for Actress Information
+### Resources for performers information
 
-The server provides dedicated resources to access actress information in multiple formats:
+The server provides dedicated resources to access performers information in multiple formats:
 
 #### Resource URIs
 
-- **`stash://actresses/all`** - Lists all favorite actresses with basic information
+- **`stash://performer/all`** - Lists all favorite performers with basic information
   - Returns: Name, country, ethnicity, height, weight, and associated tags
-  - Use case: Get a quick overview of all favorite actresses
+  - Use case: Get a quick overview of all favorite performers
 
-- **`stash://actress/{name}`** - Detailed information for a specific actress
-  - Parameters: `{name}` - Exact actress name
+- **`stash://performer/{name}`** - Detailed information for a specific performer
+  - Parameters: `{name}` - Exact performer name
   - Returns: Complete profile including demographics, physical characteristics, bio, and tags
-  - Use case: Get comprehensive information about a specific actress
+  - Use case: Get comprehensive information about a specific performer
 
-- **`stash://actress/country/{country}`** - Filter actresses by country
+- **`stash://performer/country/{country}`** - Filter performers by country
   - Parameters: `{country}` - Country name or code (e.g., "USA", "ES")
-  - Returns: List of actresses from the specified country with ethnicity
-  - Use case: Discover actresses from a specific country
+  - Returns: List of performers from the specified country with ethnicity
+  - Use case: Discover performers from a specific country
 
-- **`stash://actress/ethnicity/{ethnicity}`** - Filter actresses by ethnicity
+- **`stash://performer/ethnicity/{ethnicity}`** - Filter performers by ethnicity
   - Parameters: `{ethnicity}` - Ethnicity name (e.g., "Caucasian", "Asian")
-  - Returns: List of actresses with the specified ethnicity and their countries
-  - Use case: Find actresses matching specific ethnic characteristics
+  - Returns: List of performers with the specified ethnicity and their countries
+  - Use case: Find performers matching specific ethnic characteristics
 
-- **`stash://actress/stats`** - Statistical summary of the actress database
+- **`stash://performer/stats`** - Statistical summary of the performer database
   - Returns:
-    - Total number of favorite actresses
+    - Total number of favorite performers
     - Geographic distribution (countries and counts)
     - Ethnic distribution
     - Physical statistics (average height and weight ranges)
-  - Use case: Analyze the composition and diversity of your actress collection
+  - Use case: Analyze the composition and diversity of your performer collection
 
 ## Configuration
 

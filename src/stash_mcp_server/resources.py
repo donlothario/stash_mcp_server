@@ -1,6 +1,6 @@
-"""MCP Resources for Stash actress information.
+"""MCP Resources for Stash performer information.
 
-This module provides resources that expose detailed actress information
+This module provides resources that expose detailed performer information
 from the Stash database, allowing clients to access performer data
 through the MCP resource protocol.
 """
@@ -28,17 +28,17 @@ def register_resources(mcp: FastMCP) -> None:
     """
 
     @mcp.resource(
-        uri="stash://actresses/all",
-        name="All Actresses",
-        description="List of all favorite actresses in the Stash database"
+        uri="stash://performer/all",
+        name="All performers",
+        description="List of all favorite performers in the Stash database"
     )
-    def list_all_actresses() -> str:
-        """Return a JSON list of all favorite actresses.
+    def list_all_performers() -> str:
+        """Return a JSON list of all favorite performers.
 
         Returns
         -------
         str
-            JSON string containing all actresses with basic information.
+            JSON string containing all performers with basic information.
         """
         try:
             stash = get_stash_interface()
@@ -53,15 +53,15 @@ def register_resources(mcp: FastMCP) -> None:
                 return json.dumps({
                     "success": True,
                     "total": 0,
-                    "actresses": []
+                    "performers": []
                 })
 
-            logger.info("Retrieved %d favorite actresses", len(performers))
+            logger.info("Retrieved %d favorite performers", len(performers))
 
-            # Build actress list
-            actresses = []
+            # Build performer list
+            performers = []
             for performer in performers:
-                actress_data: Dict[str, Any] = {
+                performer_data: Dict[str, Any] = {
                     "name": performer.get("name", "Unknown"),
                     "country": performer.get("country", "Unknown"),
                     "ethnicity": performer.get("ethnicity", "Unknown"),
@@ -69,51 +69,51 @@ def register_resources(mcp: FastMCP) -> None:
 
                 height = performer.get("height_cm")
                 if height:
-                    actress_data["height_cm"] = height
+                    performer_data["height_cm"] = height
 
                 weight = performer.get("weight")
                 if weight:
-                    actress_data["weight"] = weight
+                    performer_data["weight"] = weight
 
                 # Add tags if available
                 tags = performer.get("tags", [])
                 if tags:
-                    actress_data["tags"] = [
+                    performer_data["tags"] = [
                         tag.get("name", "Unknown") for tag in tags
                     ]
 
-                actresses.append(actress_data)
+                performers.append(performer_data)
 
             return json.dumps({
                 "success": True,
-                "total": len(actresses),
-                "actresses": actresses
+                "total": len(performers),
+                "performers": performers
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
-            logger.error("Error listing all actresses: %s", e)
+            logger.error("Error listing all performers: %s", e)
             return json.dumps({
                 "success": False,
                 "error": str(e)
             })
 
     @mcp.resource(
-        uri="stash://actress/{name}",
-        name="Actress Information",
-        description="Detailed information about a specific actress"
+        uri="stash://performer/{name}",
+        name="Performer Information",
+        description="Detailed information about a specific performer"
     )
-    def get_actress_info(name: str) -> str:
-        """Return detailed information about a specific actress.
+    def get_performers_info(name: str) -> str:
+        """Return detailed information about a specific performer.
 
         Parameters
         ----------
         name : str
-            Name of the actress
+            Name of the performer
 
         Returns
         -------
         str
-            JSON string containing detailed actress information.
+            JSON string containing detailed performer information.
         """
         try:
             stash = get_stash_interface()
@@ -122,16 +122,16 @@ def register_resources(mcp: FastMCP) -> None:
             )
 
             if not performer:
-                logger.warning("Actress '%s' not found", name)
+                logger.warning("Performer '%s' not found", name)
                 return json.dumps({
                     "success": False,
-                    "error": f"Actress '{name}' not found in the database."
+                    "error": f"Performer '{name}' not found in the database."
                 })
 
-            logger.info("Retrieved information for actress '%s'", name)
+            logger.info("Retrieved information for performer '%s'", name)
 
             # Build detailed information
-            actress_info: Dict[str, Any] = {
+            performer_info: Dict[str, Any] = {
                 "name": performer.get("name", "Unknown"),
                 "country": performer.get("country", "Not specified"),
                 "ethnicity": performer.get("ethnicity", "Not specified"),
@@ -142,15 +142,15 @@ def register_resources(mcp: FastMCP) -> None:
             # Physical measurements
             height = performer.get("height_cm")
             if height:
-                actress_info["height_cm"] = height
+                performer_info["height_cm"] = height
 
             weight = performer.get("weight")
             if weight:
-                actress_info["weight"] = weight
+                performer_info["weight"] = weight
 
             measurements = performer.get("measurements")
             if measurements:
-                actress_info["measurements"] = measurements
+                performer_info["measurements"] = measurements
 
             # Physical characteristics
             physical_chars: Dict[str, Any] = {}
@@ -163,39 +163,39 @@ def register_resources(mcp: FastMCP) -> None:
                 physical_chars["tattoos"] = tattoos
 
             if physical_chars:
-                actress_info["physical_characteristics"] = physical_chars
+                performer_info["physical_characteristics"] = physical_chars
 
             # Bio/Details
             details = performer.get("details")
             if details:
-                actress_info["bio"] = details
+                performer_info["bio"] = details
 
             # Tags
             tags = performer.get("tags", [])
             if tags:
-                actress_info["tags"] = [
+                performer_info["tags"] = [
                     tag.get("name", "Unknown") for tag in tags
                 ]
 
             return json.dumps({
                 "success": True,
-                "actress": actress_info
+                "performer": performer_info
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
-            logger.error("Error getting actress info for '%s': %s", name, e)
+            logger.error("Error getting performer info for '%s': %s", name, e)
             return json.dumps({
                 "success": False,
                 "error": str(e)
             })
 
     @mcp.resource(
-        uri="stash://actress/country/{country}",
-        name="Actresses by Country",
-        description="List of actresses from a specific country"
+        uri="stash://performer/country/{country}",
+        name="Performers by Country",
+        description="List of performers from a specific country"
     )
-    def get_actresses_by_country(country: str) -> str:
-        """Return actresses from a specific country.
+    def get_performers_by_country(country: str) -> str:
+        """Return performers from a specific country.
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ def register_resources(mcp: FastMCP) -> None:
         Returns
         -------
         str
-            JSON string containing actresses from the specified country.
+            JSON string containing performers from the specified country.
         """
         try:
             stash = get_stash_interface()
@@ -222,18 +222,18 @@ def register_resources(mcp: FastMCP) -> None:
                     "success": True,
                     "country": country,
                     "total": 0,
-                    "actresses": []
+                    "performers": []
                 })
 
             logger.info(
-                "Retrieved %d actresses from %s",
+                "Retrieved %d performers from %s",
                 len(performers),
                 country
             )
 
-            actresses = []
+            performers = []
             for performer in performers:
-                actresses.append({
+                performers.append({
                     "name": performer.get("name", "Unknown"),
                     "ethnicity": performer.get("ethnicity", "Unknown")
                 })
@@ -241,13 +241,13 @@ def register_resources(mcp: FastMCP) -> None:
             return json.dumps({
                 "success": True,
                 "country": country,
-                "total": len(actresses),
-                "actresses": actresses
+                "total": len(performers),
+                "performers": performers
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
             logger.error(
-                "Error getting actresses from country '%s': %s",
+                "Error getting performers from country '%s': %s",
                 country,
                 e
             )
@@ -257,12 +257,12 @@ def register_resources(mcp: FastMCP) -> None:
             })
 
     @mcp.resource(
-        uri="stash://actress/ethnicity/{ethnicity}",
-        name="Actresses by Ethnicity",
-        description="List of actresses with a specific ethnicity"
+        uri="stash://performer/ethnicity/{ethnicity}",
+        name="Performers by Ethnicity",
+        description="List of performers with a specific ethnicity"
     )
-    def get_actresses_by_ethnicity(ethnicity: str) -> str:
-        """Return actresses with a specific ethnicity.
+    def get_performers_by_ethnicity(ethnicity: str) -> str:
+        """Return performers with a specific ethnicity.
 
         Parameters
         ----------
@@ -272,7 +272,7 @@ def register_resources(mcp: FastMCP) -> None:
         Returns
         -------
         str
-            JSON string containing actresses with the specified ethnicity.
+            JSON string containing performers with the specified ethnicity.
         """
         try:
             stash = get_stash_interface()
@@ -289,18 +289,18 @@ def register_resources(mcp: FastMCP) -> None:
                     "success": True,
                     "ethnicity": ethnicity,
                     "total": 0,
-                    "actresses": []
+                    "performers": []
                 })
 
             logger.info(
-                "Retrieved %d actresses with ethnicity %s",
+                "Retrieved %d performers with ethnicity %s",
                 len(performers),
                 ethnicity
             )
 
-            actresses = []
+            performers = []
             for performer in performers:
-                actresses.append({
+                performers.append({
                     "name": performer.get("name", "Unknown"),
                     "country": performer.get("country", "Unknown")
                 })
@@ -308,13 +308,13 @@ def register_resources(mcp: FastMCP) -> None:
             return json.dumps({
                 "success": True,
                 "ethnicity": ethnicity,
-                "total": len(actresses),
-                "actresses": actresses
+                "total": len(performers),
+                "performers": performers
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
             logger.error(
-                "Error getting actresses with ethnicity '%s': %s",
+                "Error getting performers with ethnicity '%s': %s",
                 ethnicity,
                 e
             )
@@ -324,17 +324,17 @@ def register_resources(mcp: FastMCP) -> None:
             })
 
     @mcp.resource(
-        uri="stash://actress/stats",
-        name="Actress Statistics",
-        description="Statistical summary of all actresses in the database"
+        uri="stash://performer/stats",
+        name="Performers Statistics",
+        description="Statistical summary of all performers in the database"
     )
-    def get_actress_statistics() -> str:
-        """Return statistical summary of all actresses.
+    def get_performer_statistics() -> str:
+        """Return statistical summary of all performers.
 
         Returns
         -------
         str
-            JSON string containing actress statistics.
+            JSON string containing performer statistics.
         """
         try:
             stash = get_stash_interface()
@@ -348,11 +348,11 @@ def register_resources(mcp: FastMCP) -> None:
             if not performers:
                 return json.dumps({
                     "success": True,
-                    "total_actresses": 0,
+                    "total_performers": 0,
                     "statistics": {}
                 })
 
-            logger.info("Generated statistics for %d actresses", len(performers))
+            logger.info("Generated statistics for %d performers", len(performers))
 
             # Calculate statistics
             countries: Dict[str, int] = {}
@@ -428,12 +428,12 @@ def register_resources(mcp: FastMCP) -> None:
 
             return json.dumps({
                 "success": True,
-                "total_actresses": len(performers),
+                "total_performers": len(performers),
                 "statistics": stats
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
-            logger.error("Error generating actress statistics: %s", e)
+            logger.error("Error generating performer statistics: %s", e)
             return json.dumps({
                 "success": False,
                 "error": str(e)
