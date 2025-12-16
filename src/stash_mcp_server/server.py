@@ -11,6 +11,7 @@ from fastmcp import FastMCP
 
 from .connection import connect_to_stash
 from .prompts import register_prompts
+from .resources import register_resources
 from .tools import register_tools
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -18,9 +19,10 @@ logger: logging.Logger = logging.getLogger(__name__)
 # Initialize FastMCP server
 mcp = FastMCP(name="Stash MCP")
 
-# Register all tools and prompts
+# Register all tools, prompts, and resources
 register_tools(mcp)
 register_prompts(mcp)
+register_resources(mcp)
 
 
 def main() -> None:

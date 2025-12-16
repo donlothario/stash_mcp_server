@@ -17,6 +17,15 @@ An MCP (Model Context Protocol) server that provides a concise set of tools to q
 | **recommend-scenes**    | Personalized scene recommendations        | `preferences: str`    |
 | **discover-performers** | Performer discovery by criteria           | `criteria: str`       |
 
+### Resources
+| Resource                   | Description                                    | URI                                     |
+| -------------------------- | ---------------------------------------------- | --------------------------------------- |
+| **All Actresses**          | List of all favorite actresses with basic info | `stash://actresses/all`                 |
+| **Actress Information**    | Detailed information about a specific actress  | `stash://actress/{name}`                |
+| **Actresses by Country**   | List of actresses filtered by country          | `stash://actress/country/{country}`     |
+| **Actresses by Ethnicity** | List of actresses filtered by ethnicity        | `stash://actress/ethnicity/{ethnicity}` |
+| **Actress Statistics**     | Statistical summary of all actresses           | `stash://actress/stats`                 |
+
 ### Tools
 | Tool                              | Description                                  | Parameters                                                                     |
 | --------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -59,6 +68,39 @@ Each filter supports modifiers for different comparison types:
 For `BETWEEN` and `NOT_BETWEEN` filters:
 - `height_cm_value2: int` - Second value for height range
 - `weight_value2: int` - Second value for weight range
+
+### Resources for Actress Information
+
+The server provides dedicated resources to access actress information in multiple formats:
+
+#### Resource URIs
+
+- **`stash://actresses/all`** - Lists all favorite actresses with basic information
+  - Returns: Name, country, ethnicity, height, weight, and associated tags
+  - Use case: Get a quick overview of all favorite actresses
+
+- **`stash://actress/{name}`** - Detailed information for a specific actress
+  - Parameters: `{name}` - Exact actress name
+  - Returns: Complete profile including demographics, physical characteristics, bio, and tags
+  - Use case: Get comprehensive information about a specific actress
+
+- **`stash://actress/country/{country}`** - Filter actresses by country
+  - Parameters: `{country}` - Country name or code (e.g., "USA", "ES")
+  - Returns: List of actresses from the specified country with ethnicity
+  - Use case: Discover actresses from a specific country
+
+- **`stash://actress/ethnicity/{ethnicity}`** - Filter actresses by ethnicity
+  - Parameters: `{ethnicity}` - Ethnicity name (e.g., "Caucasian", "Asian")
+  - Returns: List of actresses with the specified ethnicity and their countries
+  - Use case: Find actresses matching specific ethnic characteristics
+
+- **`stash://actress/stats`** - Statistical summary of the actress database
+  - Returns:
+    - Total number of favorite actresses
+    - Geographic distribution (countries and counts)
+    - Ethnic distribution
+    - Physical statistics (average height and weight ranges)
+  - Use case: Analyze the composition and diversity of your actress collection
 
 ## Configuration
 

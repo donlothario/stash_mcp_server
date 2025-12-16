@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "stash-mcp-server"
-version = "0.1.0"
+version = "0.2.0"
 description = "An MCP server for Stash"
 requires-python = ">=3.11"
 dependencies = [
@@ -37,7 +37,7 @@ where = ["src"]
 [tool.autopep8]
 max_line_length = 100
 # in-place = true
-recursive = true
+# recursive = true
 aggressive = 3
 ignore = []
 select = [
