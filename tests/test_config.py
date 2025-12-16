@@ -166,3 +166,73 @@ class TestEnvironmentLoading:
         # Verify the key is accessible
         import os
         assert os.getenv("STASH_API_KEY") == "test_key_123"
+
+    def test_load_environment_with_find_dotenv(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test environment loading when find_dotenv finds a file.
+
+        Verifies that _load_environment correctly loads from .env.
+        """
+        monkeypatch.setenv("STASH_CONNECT_DELAY_SECONDS", "2.5")
+
+        from stash_mcp_server.config import STASH_CONNECT_DELAY_SECONDS
+        assert isinstance(STASH_CONNECT_DELAY_SECONDS, float)
+
+    def test_stash_connect_delay_seconds_is_float(self) -> None:
+        """Test that connection delay is a float.
+
+        Verifies that the delay configuration is properly typed.
+        """
+        from stash_mcp_server.config import STASH_CONNECT_DELAY_SECONDS
+        assert isinstance(STASH_CONNECT_DELAY_SECONDS, float)
+        assert STASH_CONNECT_DELAY_SECONDS > 0
+
+    def test_configuration_is_loaded_in_testing(self) -> None:
+        """Test that configuration loads even in testing environment.
+
+        Verifies that testing mode allows loading without API key.
+        """
+        import os
+        is_testing = os.getenv("PYTEST_CURRENT_TEST") is not None
+        assert is_testing or os.getenv("TESTING") == "true"
+
+    def test_validation_check_is_skipped_in_testing(self) -> None:
+        """Test that API key validation is skipped in test mode.
+
+        Verifies that configuration can be imported without API key
+        when PYTEST_CURRENT_TEST is set.
+        """
+        # The fact that we can import the module without errors
+        # proves that validation was skipped
+        from stash_mcp_server import config
+        assert config is not None
+
+    def test_config_module_has_all_required_constants(self) -> None:
+        """Test that all required configuration constants are defined.
+
+        Verifies that the config module provides all expected constants.
+        """
+        from stash_mcp_server import config
+
+        # Check that all important constants exist
+        assert hasattr(config, 'DEFAULT_ENDPOINT')
+        assert hasattr(config, 'STASH_ENDPOINT')
+        assert hasattr(config, 'STASH_API_KEY')
+        assert hasattr(config, 'STASH_CONNECT_RETRIES')
+        assert hasattr(config, 'STASH_CONNECT_DELAY_SECONDS')
+        assert hasattr(config, 'PERFORMER_CACHE_SIZE')
+        assert hasattr(config, 'SCENES_CACHE_SIZE')
+        assert hasattr(config, 'PERFORMERS_LIST_CACHE_SIZE')
+        assert hasattr(config, 'DEFAULT_MAX_BATCH_PERFORMERS')
+        assert hasattr(config, 'RATING_EXCELLENT')
+        assert hasattr(config, 'RATING_GOOD')
+        assert hasattr(config, 'RATING_AVERAGE')
+
+    def test_logging_configuration(self) -> None:
+        """Test that logging is configured correctly.
+
+        Verifies that the logger is properly initialized.
+        """
+        from stash_mcp_server.config import logger
+
+        assert logger is not None
+        assert logger.name == "stash_mcp_server.config"

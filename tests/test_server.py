@@ -4,9 +4,10 @@ This module tests the server initialization, tool registration,
 and basic server functionality.
 """
 
+from unittest.mock import patch
 from fastmcp import Client
 
-from stash_mcp_server.server import mcp
+from stash_mcp_server.server import mcp, main
 
 
 async def test_server_initialization() -> None:
@@ -132,3 +133,22 @@ async def test_server_list_prompts_via_client() -> None:
         assert len(prompts_response) > 0, (
             "Client should receive list of available prompts"
         )
+
+
+def test_main_function_with_mocked_connection() -> None:
+    """Test the main function executes without errors.
+
+    Verifies that the main function initializes and configures
+    the server correctly.
+    """
+    with patch('stash_mcp_server.server.connect_to_stash') as mock_connect, \
+            patch('stash_mcp_server.server.mcp.run') as mock_run:
+        # Note: We can't actually run the server since it blocks,
+        # but we can test that main() sets it up correctly
+        main()
+
+        # Verify that connection was attempted
+        mock_connect.assert_called_once()
+
+        # Verify that the server was configured to run
+        mock_run.assert_called_once_with(transport="stdio")

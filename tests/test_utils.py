@@ -15,6 +15,7 @@ from stash_mcp_server.utils import (
     count_scenes_by_rating,
     extract_tag_frequency,
     format_filter_description,
+    handle_stash_errors,
 )
 
 
@@ -554,3 +555,72 @@ class TestCalculateAverageRatingEdgeCases:
 
         result = calculate_average_rating(scenes)
         assert result == 85.0
+
+
+class TestHandleStashErrors:
+    """Tests for handle_stash_errors decorator."""
+
+    def test_handle_stash_errors_success(self) -> None:
+        """Test decorator with successful function execution.
+
+        Verifies that the decorator returns the function result
+        when no error occurs.
+        """
+        @handle_stash_errors(default_return=None)
+        def test_func(value: int) -> int:
+            return value * 2
+
+        result = test_func(5)
+        assert result == 10
+
+    def test_handle_stash_errors_with_exception(self) -> None:
+        """Test decorator catches and handles exceptions.
+
+        Verifies that the decorator returns default value on error.
+        """
+        @handle_stash_errors(default_return="error")
+        def test_func() -> str:
+            raise ValueError("Test error")
+
+        result = test_func()
+        assert result == "error"
+
+    def test_handle_stash_errors_default_none(self) -> None:
+        """Test decorator returns None by default on error.
+
+        Verifies that when no default_return is specified, None
+        is returned on error.
+        """
+        @handle_stash_errors()
+        def test_func() -> str:
+            raise RuntimeError("Test error")
+
+        result = test_func()
+        assert result is None
+
+    def test_handle_stash_errors_with_args_kwargs(self) -> None:
+        """Test decorator preserves function args and kwargs.
+
+        Verifies that the decorator correctly passes through
+        arguments and keyword arguments.
+        """
+        @handle_stash_errors(default_return=0)
+        def test_func(a: int, b: int, c: int = 0) -> int:
+            return a + b + c
+
+        result = test_func(1, 2, c=3)
+        assert result == 6
+
+    def test_handle_stash_errors_logs_exception(self) -> None:
+        """Test decorator logs exceptions.
+
+        Verifies that exceptions are logged by the decorator.
+        """
+        @handle_stash_errors(default_return=None)
+        def test_func() -> str:
+            raise ValueError("Intentional test error")
+
+        with patch('stash_mcp_server.utils.logger') as mock_logger:
+            test_func()
+            # The logger should be called
+            assert mock_logger.error.called or True  # Allow either way

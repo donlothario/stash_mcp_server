@@ -59,7 +59,7 @@ def register_resources(mcp: FastMCP) -> None:
             logger.info("Retrieved %d favorite performers", len(performers))
 
             # Build performer list
-            performers = []
+            performers_list = []
             for performer in performers:
                 performer_data: Dict[str, Any] = {
                     "name": performer.get("name", "Unknown"),
@@ -82,12 +82,12 @@ def register_resources(mcp: FastMCP) -> None:
                         tag.get("name", "Unknown") for tag in tags
                     ]
 
-                performers.append(performer_data)
+                performers_list.append(performer_data)
 
             return json.dumps({
                 "success": True,
-                "total": len(performers),
-                "performers": performers
+                "total": len(performers_list),
+                "performers": performers_list
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
@@ -231,9 +231,9 @@ def register_resources(mcp: FastMCP) -> None:
                 country
             )
 
-            performers = []
+            performers_list = []
             for performer in performers:
-                performers.append({
+                performers_list.append({
                     "name": performer.get("name", "Unknown"),
                     "ethnicity": performer.get("ethnicity", "Unknown")
                 })
@@ -241,8 +241,8 @@ def register_resources(mcp: FastMCP) -> None:
             return json.dumps({
                 "success": True,
                 "country": country,
-                "total": len(performers),
-                "performers": performers
+                "total": len(performers_list),
+                "performers": performers_list
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
@@ -298,9 +298,9 @@ def register_resources(mcp: FastMCP) -> None:
                 ethnicity
             )
 
-            performers = []
+            performers_list = []
             for performer in performers:
-                performers.append({
+                performers_list.append({
                     "name": performer.get("name", "Unknown"),
                     "country": performer.get("country", "Unknown")
                 })
@@ -308,8 +308,8 @@ def register_resources(mcp: FastMCP) -> None:
             return json.dumps({
                 "success": True,
                 "ethnicity": ethnicity,
-                "total": len(performers),
-                "performers": performers
+                "total": len(performers_list),
+                "performers": performers_list
             }, ensure_ascii=False, indent=2)
 
         except Exception as e:
