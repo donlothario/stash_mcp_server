@@ -8,8 +8,6 @@ import json
 from typing import Any, Callable, Dict
 from unittest.mock import Mock, patch
 
-import pytest
-
 from stash_mcp_server.resources import register_resources
 
 
