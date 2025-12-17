@@ -5,9 +5,10 @@ and basic server functionality.
 """
 
 from unittest.mock import patch
+
 from fastmcp import Client
 
-from stash_mcp_server.server import mcp, main
+from stash_mcp_server.server import main, mcp
 
 
 async def test_server_initialization() -> None:
