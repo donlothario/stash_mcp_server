@@ -19,6 +19,7 @@ from .config import (
     RATING_EXCELLENT,
     RATING_GOOD,
     SCENES_CACHE_SIZE,
+    STASH_ENDPOINT,
 )
 from .connection import connect_to_stash, get_stash_interface
 from .fragments import FRAGMENTS
@@ -33,6 +34,50 @@ from .utils import (
 )
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# Helper Functions for Adding Links
+# ============================================================================
+
+def _add_performer_link(performer: Dict[str, Any]) -> Dict[str, Any]:
+    """Add a web link to a performer dictionary.
+
+    Parameters
+    ----------
+    performer : Dict[str, Any]
+        Performer object from Stash API.
+
+    Returns
+    -------
+    Dict[str, Any]
+        Performer object with added 'link' field.
+    """
+    performer_copy = performer.copy()
+    performer_id = performer.get("id")
+    if performer_id:
+        performer_copy["link"] = f"{STASH_ENDPOINT}/performer/{performer_id}"
+    return performer_copy
+
+
+def _add_scene_link(scene: Dict[str, Any]) -> Dict[str, Any]:
+    """Add a web link to a scene dictionary.
+
+    Parameters
+    ----------
+    scene : Dict[str, Any]
+        Scene object from Stash API.
+
+    Returns
+    -------
+    Dict[str, Any]
+        Scene object with added 'link' field.
+    """
+    scene_copy = scene.copy()
+    scene_id = scene.get("id")
+    if scene_id:
+        scene_copy["link"] = f"{STASH_ENDPOINT}/scenes/{scene_id}"
+    return scene_copy
 
 
 # ============================================================================
@@ -135,7 +180,11 @@ def _cached_get_all_scenes(
         )
         logger.info("Found %d scenes%s", len(scenes), filter_desc)
 
-        return scenes  # type: ignore[no-any-return]
+        # Add links to all scenes
+        scenes_with_links = [
+            _add_scene_link(s) for s in scenes
+        ]
+        return scenes_with_links  # type: ignore[no-any-return]
 
     except Exception as e:
         logger.error("Error in _cached_get_all_scenes: %s", e)
@@ -262,7 +311,12 @@ def _cached_get_all_performers(
             len(performers),
             filter_desc,
         )
-        return performers
+
+        # Add links to all performers
+        performers_with_links = [
+            _add_performer_link(p) for p in performers
+        ]
+        return performers_with_links
 
     except Exception as e:
         logger.error("Error _cached_get_all_performers: %s", e)
@@ -441,7 +495,11 @@ def register_tools(mcp: FastMCP) -> None:
                 performer_name,
                 " (organized only)" if organized_only else ""
             )
-            return scenes  # type: ignore[no-any-return]
+            # Add links to all scenes
+            scenes_with_links = [
+                _add_scene_link(s) for s in scenes
+            ]
+            return scenes_with_links  # type: ignore[no-any-return]
 
         except Exception as e:
             logger.error(
@@ -561,6 +619,9 @@ def _register_advanced_tools(mcp: FastMCP) -> None:
                 await ctx.error(f"Performer '{performer_name}' not found")
                 return {"error": f"Performer '{performer_name}' not found"}
 
+            # Add link to performer
+            performer_info = _add_performer_link(performer_info)
+
             await ctx.report_progress(20, 100)
 
             # Phase 2: Scene analysis
@@ -579,6 +640,8 @@ def _register_advanced_tools(mcp: FastMCP) -> None:
                 scenes = stash.find_scenes(
                     f=filters, fragment=FRAGMENTS["scene"]
                 )
+                # Add links to scenes
+                scenes = [_add_scene_link(s) for s in scenes]
             except Exception as e:
                 await ctx.warning(f"Error getting scenes: {e}")
 
@@ -760,6 +823,9 @@ def _register_advanced_tools(mcp: FastMCP) -> None:
             try:
                 performer_info = _cached_get_performer_info(performer_name)
                 if performer_info:
+                    # Add link to performer
+                    performer_info = _add_performer_link(performer_info)
+
                     # Get basic scene count
                     scenes = []
                     try:
@@ -775,6 +841,8 @@ def _register_advanced_tools(mcp: FastMCP) -> None:
                         scenes = stash.find_scenes(
                             f=filters, fragment=FRAGMENTS["scene"]
                         )
+                        # Add links to scenes
+                        scenes = [_add_scene_link(s) for s in scenes]
                     except Exception:
                         pass  # Continue without scenes if error
 
