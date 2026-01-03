@@ -1258,3 +1258,915 @@ class TestRegisterResourcesFunction:
             assert stats['geographic_distribution']['countries'] == {}
             assert 'ethnic_distribution' in stats
             assert stats['ethnic_distribution']['total_ethnicities'] == 0
+
+
+# ============================================================================
+# Studio Resources Tests
+# ============================================================================
+
+class TestListAllStudios:
+    """Tests for the list_all_studios resource."""
+
+    def test_list_all_studios_success(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test successful listing of all favorite studios.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        studios_list = [
+            {
+                "id": "1",
+                "name": "Studio 1",
+                "scene_count": 10,
+                "url": "http://example.com",
+                "rating100": 85,
+            },
+            {
+                "id": "2",
+                "name": "Studio 2",
+                "scene_count": 5,
+            },
+        ]
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studios.return_value = studios_list
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/all']()
+
+            # Assert
+            assert mock_stash_interface.find_studios.called
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total'] == 2
+            assert 'studios' in result_data
+
+    def test_list_all_studios_empty(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test listing studios when none exist.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studios.return_value = []
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/all']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total'] == 0
+            assert result_data['studios'] == []
+
+    def test_list_all_studios_exception(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test error handling when listing studios.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studios.side_effect = (
+                Exception('API error')
+            )
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/all']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+
+class TestGetStudioInfo:
+    """Tests for the get_studio_info resource."""
+
+    def test_get_studio_info_success(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test successful retrieval of studio info.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        studio_data = {
+            "id": "1",
+            "name": "Test Studio",
+            "scene_count": 10,
+            "url": "http://example.com",
+            "rating100": 85,
+            "favorite": True,
+            "details": "A test studio",
+            "aliases": "TS",
+            "parent_studio": {"id": "0", "name": "Parent"},
+            "child_studios": [{"id": "2", "name": "Child"}],
+            "tags": [{"name": "tag1"}],
+        }
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studio.return_value = studio_data
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/{name}']('Test Studio')
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['studio']['name'] == 'Test Studio'
+            assert result_data['studio']['scene_count'] == 10
+
+    def test_get_studio_info_not_found(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test studio not found error.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studio.return_value = None
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/{name}']('Unknown')
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+    def test_get_studio_info_exception(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test error handling in studio info retrieval.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studio.side_effect = (
+                Exception('API error')
+            )
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/{name}']('Test')
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+
+class TestGetStudioStatistics:
+    """Tests for the get_studio_statistics resource."""
+
+    def test_get_studio_statistics_success(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test successful retrieval of studio statistics.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        studios = [
+            {
+                "id": "1",
+                "name": "Studio 1",
+                "scene_count": 10,
+                "rating100": 85,
+                "parent_studio": None,
+                "child_studios": [{"id": "2"}],
+            },
+            {
+                "id": "2",
+                "name": "Studio 2",
+                "scene_count": 5,
+                "rating100": 75,
+                "parent_studio": {"id": "1"},
+                "child_studios": None,
+            },
+        ]
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studios.return_value = studios
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/stats']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total_studios'] == 2
+            assert result_data['statistics']['total_scenes'] == 15
+
+    def test_get_studio_statistics_empty(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test studio statistics with no studios.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studios.return_value = []
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/stats']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total_studios'] == 0
+
+    def test_get_studio_statistics_exception(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test error handling in studio statistics.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_studios.side_effect = (
+                Exception('DB error')
+            )
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://studio/stats']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+
+# ============================================================================
+# Tag Resources Tests
+# ============================================================================
+
+class TestListAllTags:
+    """Tests for the list_all_tags resource."""
+
+    def test_list_all_tags_success(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test successful listing of all favorite tags.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        tags_list = [
+            {
+                "id": "1",
+                "name": "Tag 1",
+                "scene_count": 10,
+                "description": "A tag",
+                "scene_marker_count": 5,
+            },
+            {
+                "id": "2",
+                "name": "Tag 2",
+                "scene_count": 8,
+            },
+        ]
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tags.return_value = tags_list
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/all']()
+
+            # Assert
+            assert mock_stash_interface.find_tags.called
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total'] == 2
+
+    def test_list_all_tags_empty(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test listing tags when none exist.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tags.return_value = []
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/all']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total'] == 0
+
+    def test_list_all_tags_exception(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test error handling when listing tags.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tags.side_effect = (
+                Exception('API error')
+            )
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/all']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+
+class TestGetTagInfo:
+    """Tests for the get_tag_info resource."""
+
+    def test_get_tag_info_success(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test successful retrieval of tag info.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        tag_data = {
+            "id": "1",
+            "name": "Test Tag",
+            "scene_count": 10,
+            "scene_marker_count": 5,
+            "favorite": True,
+            "description": "A test tag",
+            "aliases": "tt",
+            "parents": [{"id": "0", "name": "Parent"}],
+            "children": [{"id": "2", "name": "Child"}],
+        }
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tag.return_value = tag_data
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/{name}']('Test Tag')
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['tag']['name'] == 'Test Tag'
+
+    def test_get_tag_info_not_found(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test tag not found error.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tag.return_value = None
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/{name}']('Unknown')
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+    def test_get_tag_info_exception(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test error handling in tag info retrieval.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tag.side_effect = (
+                Exception('API error')
+            )
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/{name}']('Test')
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False
+
+
+class TestGetTagStatistics:
+    """Tests for the get_tag_statistics resource."""
+
+    def test_get_tag_statistics_success(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test successful retrieval of tag statistics.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        tags = [
+            {
+                "id": "1",
+                "name": "Tag 1",
+                "scene_count": 10,
+                "scene_marker_count": 5,
+                "parents": [{"id": "0"}],
+                "children": [{"id": "2"}],
+            },
+            {
+                "id": "2",
+                "name": "Tag 2",
+                "scene_count": 8,
+                "scene_marker_count": 3,
+                "parents": None,
+                "children": None,
+            },
+        ]
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tags.return_value = tags
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/stats']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total_tags'] == 2
+            assert result_data['statistics']['total_scene_associations'] == 18
+            assert result_data['statistics']['total_marker_associations'] == 8
+
+    def test_get_tag_statistics_empty(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test tag statistics with no tags.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tags.return_value = []
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/stats']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is True
+            assert result_data['total_tags'] == 0
+
+    def test_get_tag_statistics_exception(
+        self,
+        mock_stash_interface: Mock,
+    ) -> None:
+        """Test error handling in tag statistics.
+
+        Parameters
+        ----------
+        mock_stash_interface : Mock
+            Mocked Stash interface.
+        """
+        # Arrange
+        mock_mcp = Mock()
+        resources_dict: Dict[str, Any] = {}
+
+        def capture_resource(
+            uri: str,
+            name: str,
+            description: str,
+        ) -> Callable:
+            """Capture resource function for testing."""
+            def decorator(func: Callable) -> Callable:
+                resources_dict[uri] = func
+                return func
+            return decorator
+
+        mock_mcp.resource = capture_resource
+
+        with patch(
+            'stash_mcp_server.resources.get_stash_interface',
+            return_value=mock_stash_interface,
+        ):
+            mock_stash_interface.find_tags.side_effect = (
+                Exception('DB error')
+            )
+
+            # Act
+            register_resources(mock_mcp)
+            result = resources_dict['stash://tag/stats']()
+
+            # Assert
+            result_data = json.loads(result)
+            assert result_data['success'] is False

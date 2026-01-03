@@ -18,6 +18,8 @@ An MCP (Model Context Protocol) server that provides a concise set of tools to q
 | **discover-performers** | Performer discovery by criteria           | `criteria: str`       |
 
 ### Resources
+
+#### Performer Resources
 | Resource                    | Description                                     | URI                                       |
 | --------------------------- | ----------------------------------------------- | ----------------------------------------- |
 | **All performers**          | List of all favorite performers with basic info | `stash://performer/all`                   |
@@ -25,6 +27,20 @@ An MCP (Model Context Protocol) server that provides a concise set of tools to q
 | **Performers by Country**   | List of performers filtered by country          | `stash://performer/country/{country}`     |
 | **Performers by Ethnicity** | List of performers filtered by ethnicity        | `stash://performer/ethnicity/{ethnicity}` |
 | **Performers Statistics**   | Statistical summary of all performers           | `stash://performer/stats`                 |
+
+#### Studio Resources
+| Resource               | Description                                  | URI                     |
+| ---------------------- | -------------------------------------------- | ----------------------- |
+| **All studios**        | List of all favorite studios with basic info | `stash://studio/all`    |
+| **Studio Information** | Detailed information about a specific studio | `stash://studio/{name}` |
+| **Studios Statistics** | Statistical summary of all studios           | `stash://studio/stats`  |
+
+#### Tag Resources
+| Resource            | Description                               | URI                  |
+| ------------------- | ----------------------------------------- | -------------------- |
+| **All tags**        | List of all favorite tags with basic info | `stash://tag/all`    |
+| **Tag Information** | Detailed information about a specific tag | `stash://tag/{name}` |
+| **Tags Statistics** | Statistical summary of all tags           | `stash://tag/stats`  |
 
 ### Tools
 | Tool                              | Description                                  | Parameters                                                                     |
