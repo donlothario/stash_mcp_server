@@ -53,6 +53,9 @@ STASH_CONNECT_DELAY_SECONDS: Final[float] = float(
     os.getenv("STASH_CONNECT_DELAY_SECONDS", "1.5")
 )
 
+# Filtering Configuration
+FAVORITES_ONLY: Final[bool] = os.getenv("FAVORITES", "true").lower() == "true"
+
 # Cache Configuration
 PERFORMER_CACHE_SIZE: Final[int] = 256
 SCENES_CACHE_SIZE: Final[int] = 64

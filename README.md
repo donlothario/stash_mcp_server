@@ -127,6 +127,7 @@ The server supports flexible configuration through environment variables:
 | `STASH_API_KEY`               | —                       | Required API key (mandatory)           |
 | `STASH_CONNECT_RETRIES`       | `3`                     | Initial connection retries             |
 | `STASH_CONNECT_DELAY_SECONDS` | `1.5`                   | Delay between retries (seconds)        |
+| `FAVORITES`                   | `true`                  | Filter resources by favorites only     |
 | `LOG_LEVEL`                   | `INFO`                  | Log level: DEBUG, INFO, WARNING, ERROR |
 
 ### Environment Setup

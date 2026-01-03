@@ -11,6 +11,7 @@ from typing import Any, Dict, List
 
 from fastmcp import FastMCP
 
+from .config import FAVORITES_ONLY
 from .connection import get_stash_interface
 from .fragments import FRAGMENTS
 from .utils import add_filter
@@ -209,7 +210,7 @@ def register_resources(mcp: FastMCP) -> None:
         """
         try:
             stash = get_stash_interface()
-            filters: Dict[str, Any] = {"filter_favorites": True}
+            filters: Dict[str, Any] = {"filter_favorites": FAVORITES_ONLY}
             add_filter(filters, "country", country, "EQUALS")
 
             performers = stash.find_performers(
@@ -276,7 +277,7 @@ def register_resources(mcp: FastMCP) -> None:
         """
         try:
             stash = get_stash_interface()
-            filters: Dict[str, Any] = {"filter_favorites": True}
+            filters: Dict[str, Any] = {"filter_favorites": FAVORITES_ONLY}
             add_filter(filters, "ethnicity", ethnicity, "EQUALS")
 
             performers = stash.find_performers(
@@ -458,7 +459,7 @@ def register_resources(mcp: FastMCP) -> None:
         """
         try:
             stash = get_stash_interface()
-            filters: Dict[str, Any] = {"favorite": True}
+            filters: Dict[str, Any] = {"favorite": FAVORITES_ONLY}
 
             studios = stash.find_studios(
                 f=filters,
@@ -614,7 +615,7 @@ def register_resources(mcp: FastMCP) -> None:
         """
         try:
             stash = get_stash_interface()
-            filters: Dict[str, Any] = {"favorite": True}
+            filters: Dict[str, Any] = {"favorite": FAVORITES_ONLY}
 
             studios = stash.find_studios(
                 f=filters,
@@ -698,7 +699,7 @@ def register_resources(mcp: FastMCP) -> None:
         """
         try:
             stash = get_stash_interface()
-            filters: Dict[str, Any] = {"favorite": True}
+            filters: Dict[str, Any] = {"favorite": FAVORITES_ONLY}
 
             tags = stash.find_tags(f=filters, fragment=FRAGMENTS["tag"])
 
@@ -834,7 +835,7 @@ def register_resources(mcp: FastMCP) -> None:
         """
         try:
             stash = get_stash_interface()
-            filters: Dict[str, Any] = {"favorite": True}
+            filters: Dict[str, Any] = {"favorite": FAVORITES_ONLY}
 
             tags = stash.find_tags(f=filters, fragment=FRAGMENTS["tag"])
 
