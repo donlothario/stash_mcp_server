@@ -64,7 +64,7 @@ class StashConnection:
                     "scheme": parsed.scheme or "http",
                     "host": parsed.hostname or "localhost",
                     "port": parsed.port or 9999,
-                    "logger": None,
+                    "logger": logger,
                     "apikey": STASH_API_KEY,
                 })
 
