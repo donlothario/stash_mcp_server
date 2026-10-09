@@ -9,6 +9,7 @@ from typing import Dict, Final
 PERFORMER_FRAGMENT: Final[str] = """
 id
 name
+gender
 country
 details
 ethnicity

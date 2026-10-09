@@ -31,6 +31,7 @@ from .utils import (
     count_scenes_by_rating,
     extract_tag_frequency,
     format_filter_description,
+    normalize_gender,
 )
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -194,6 +195,8 @@ def _cached_get_all_scenes(
 @lru_cache(maxsize=PERFORMERS_LIST_CACHE_SIZE)
 def _cached_get_all_performers(
     favorites_only: bool = True,
+    gender: Optional[str] = None,
+    gender_modifier: str = "EQUALS",
     country: Optional[str] = None,
     country_modifier: str = "EQUALS",
     ethnicity: Optional[str] = None,
@@ -219,6 +222,11 @@ def _cached_get_all_performers(
     ----------
     favorites_only : bool, default True
         If True limit to favorite performers.
+    gender : Optional[str], default None
+        Filter by gender. Accepts MALE, FEMALE, TRANSGENDER_MALE,
+        TRANSGENDER_FEMALE, NON_BINARY, INTERSEX. Case-insensitive.
+    gender_modifier : str, default "EQUALS"
+        Modifier for gender filter (EQUALS, NOT_EQUALS).
     country : Optional[str], default None
         Filter by country.
     country_modifier : str, default "EQUALS"
@@ -268,6 +276,15 @@ def _cached_get_all_performers(
         if favorites_only:
             filters["filter_favorites"] = True
 
+        # Gender filter (normalized to Stash GenderEnum)
+        if gender is not None:
+            try:
+                normalized_gender = normalize_gender(gender)
+            except ValueError as e:
+                logger.error("Invalid gender filter: %s", e)
+                return []
+            add_filter(filters, "gender", normalized_gender, gender_modifier)
+
         # Add all filters using the helper function
         add_filter(filters, "country", country, country_modifier)
         add_filter(filters, "ethnicity", ethnicity, ethnicity_modifier)
@@ -295,7 +312,7 @@ def _cached_get_all_performers(
             active_filters.append("favorites")
 
         filter_fields = [
-            "country", "ethnicity", "eye_color", "hair_color",
+            "gender", "country", "ethnicity", "eye_color", "hair_color",
             "height_cm", "measurements", "piercings", "tattoos", "weight"
         ]
         for field in filter_fields:
@@ -373,6 +390,8 @@ def register_tools(mcp: FastMCP) -> None:
     )
     def get_all_performers(
         favorites_only: bool = True,
+        gender: Optional[str] = None,
+        gender_modifier: str = "EQUALS",
         country: Optional[str] = None,
         country_modifier: str = "EQUALS",
         ethnicity: Optional[str] = None,
@@ -398,6 +417,8 @@ def register_tools(mcp: FastMCP) -> None:
         """
         return _cached_get_all_performers(
             favorites_only=favorites_only,
+            gender=gender,
+            gender_modifier=gender_modifier,
             country=country,
             country_modifier=country_modifier,
             ethnicity=ethnicity,

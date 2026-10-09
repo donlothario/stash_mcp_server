@@ -194,6 +194,115 @@ class TestGetAllPerformers:
                 assert len(result.data) == 1
 
 
+class TestGetAllPerformersGender:
+    """Tests for gender filtering in get_all_performers."""
+
+    def test_gender_filter_sent_to_stash(
+        self, mock_stash_interface: Mock
+    ) -> None:
+        """Test that gender is normalized and sent to Stash."""
+        from stash_mcp_server.tools import _cached_get_all_performers
+
+        _cached_get_all_performers.cache_clear()
+        mock_stash_interface.find_performers.return_value = []
+
+        with patch(
+            'stash_mcp_server.tools.get_stash_interface',
+            return_value=mock_stash_interface
+        ):
+            _cached_get_all_performers(
+                favorites_only=False, gender="female"
+            )
+
+        _, kwargs = mock_stash_interface.find_performers.call_args
+        assert kwargs["f"]["gender"] == {
+            "value": "FEMALE", "modifier": "EQUALS"
+        }
+
+    def test_gender_not_equals_modifier(
+        self, mock_stash_interface: Mock
+    ) -> None:
+        """Test that gender_modifier is forwarded."""
+        from stash_mcp_server.tools import _cached_get_all_performers
+
+        _cached_get_all_performers.cache_clear()
+        mock_stash_interface.find_performers.return_value = []
+
+        with patch(
+            'stash_mcp_server.tools.get_stash_interface',
+            return_value=mock_stash_interface
+        ):
+            _cached_get_all_performers(
+                favorites_only=False,
+                gender="MALE",
+                gender_modifier="NOT_EQUALS",
+            )
+
+        _, kwargs = mock_stash_interface.find_performers.call_args
+        assert kwargs["f"]["gender"] == {
+            "value": "MALE", "modifier": "NOT_EQUALS"
+        }
+
+    def test_invalid_gender_returns_empty(
+        self, mock_stash_interface: Mock
+    ) -> None:
+        """Test that an invalid gender returns [] without API call."""
+        from stash_mcp_server.tools import _cached_get_all_performers
+
+        _cached_get_all_performers.cache_clear()
+
+        with patch(
+            'stash_mcp_server.tools.get_stash_interface',
+            return_value=mock_stash_interface
+        ):
+            result = _cached_get_all_performers(
+                favorites_only=False, gender="hombre"
+            )
+
+        assert result == []
+        mock_stash_interface.find_performers.assert_not_called()
+
+    def test_no_gender_filter_when_none(
+        self, mock_stash_interface: Mock
+    ) -> None:
+        """Test that no gender key is sent when gender is None."""
+        from stash_mcp_server.tools import _cached_get_all_performers
+
+        _cached_get_all_performers.cache_clear()
+        mock_stash_interface.find_performers.return_value = []
+
+        with patch(
+            'stash_mcp_server.tools.get_stash_interface',
+            return_value=mock_stash_interface
+        ):
+            _cached_get_all_performers(favorites_only=False)
+
+        _, kwargs = mock_stash_interface.find_performers.call_args
+        assert "gender" not in kwargs["f"]
+
+    async def test_get_all_performers_tool_accepts_gender(
+        self,
+        mock_stash_interface: Mock,
+        sample_performers_list: List[Dict[str, Any]]
+    ) -> None:
+        """Test that the MCP tool accepts gender parameters."""
+        mock_stash_interface.find_performers.return_value = (
+            sample_performers_list
+        )
+
+        with patch(
+            'stash_mcp_server.tools.get_stash_interface',
+            return_value=mock_stash_interface
+        ):
+            async with Client(mcp) as client:
+                result = await client.call_tool(
+                    "get_all_performers",
+                    {"favorites_only": False, "gender": "FEMALE"},
+                )
+
+                assert len(result.data) == 3
+
+
 class TestGetAllScenes:
     """Tests for get_all_scenes tool."""
 

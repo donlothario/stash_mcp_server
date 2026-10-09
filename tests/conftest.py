@@ -42,6 +42,7 @@ def sample_performer() -> Dict[str, Any]:
     return {
         "id": "123",
         "name": "Test Performer",
+        "gender": "FEMALE",
         "country": "USA",
         "ethnicity": "Caucasian",
         "eye_color": "Blue",

@@ -7,7 +7,10 @@ rating calculations, and common operations.
 from typing import Any, Dict, List
 from unittest.mock import MagicMock, Mock, patch
 
+import pytest
+
 from stash_mcp_server.utils import (
+    VALID_GENDERS,
     add_filter,
     build_rating_filter,
     build_tag_filter,
@@ -16,6 +19,7 @@ from stash_mcp_server.utils import (
     extract_tag_frequency,
     format_filter_description,
     handle_stash_errors,
+    normalize_gender,
 )
 
 
@@ -624,3 +628,36 @@ class TestHandleStashErrors:
             test_func()
             # The logger should be called
             assert mock_logger.error.called or True  # Allow either way
+
+
+class TestNormalizeGender:
+    """Tests for normalize_gender utility function."""
+
+    def test_normalize_gender_valid_values(self) -> None:
+        """Test that all valid English enum values normalize correctly."""
+        for gender in VALID_GENDERS:
+            assert normalize_gender(gender) == gender
+
+    def test_normalize_gender_case_insensitive(self) -> None:
+        """Test that gender matching is case-insensitive."""
+        assert normalize_gender("male") == "MALE"
+        assert normalize_gender("Female") == "FEMALE"
+        assert normalize_gender("transgender_male") == "TRANSGENDER_MALE"
+
+    def test_normalize_gender_separators(self) -> None:
+        """Test that spaces and dashes map to underscores."""
+        assert normalize_gender("non binary") == "NON_BINARY"
+        assert normalize_gender("non-binary") == "NON_BINARY"
+
+    def test_normalize_gender_none(self) -> None:
+        """Test that None returns None."""
+        assert normalize_gender(None) is None
+
+    def test_normalize_gender_invalid(self) -> None:
+        """Test that unknown values raise ValueError."""
+        with pytest.raises(ValueError):
+            normalize_gender("hombre")
+        with pytest.raises(ValueError):
+            normalize_gender("mujer")
+        with pytest.raises(ValueError):
+            normalize_gender("unknown")

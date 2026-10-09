@@ -42,6 +42,34 @@ def add_filter(
         filters[field_name] = filter_dict
 
 
+VALID_GENDERS = frozenset({
+    "MALE",
+    "FEMALE",
+    "TRANSGENDER_MALE",
+    "TRANSGENDER_FEMALE",
+    "NON_BINARY",
+    "INTERSEX",
+})
+
+
+def normalize_gender(value: Optional[str]) -> Optional[str]:
+    """Normalize user-supplied gender to Stash GenderEnum.
+
+    English only, case-insensitive.
+    Returns None if value is None, otherwise uppercased enum name.
+    Raises ValueError on unknown values.
+    """
+    if value is None:
+        return None
+    normalized = value.strip().upper().replace(" ", "_").replace("-", "_")
+    if normalized not in VALID_GENDERS:
+        raise ValueError(
+            f"Invalid gender '{value}'. "
+            f"Valid values: {sorted(VALID_GENDERS)}"
+        )
+    return normalized
+
+
 def build_tag_filter(
     include_tags: Optional[str] = None,
     exclude_tags: Optional[str] = None
